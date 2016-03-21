@@ -8,3 +8,5 @@
 *.blg
 *.asv
 *.lof
+*.py~
+*.csv#
