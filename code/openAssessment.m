@@ -6,22 +6,24 @@ datacsv = csvread(datacsvName);
 
 csvColumnIndex = 1; % Keep track of what column in the csv we are reading
 
+
+% Create our CPT Data structure, with a page for each node in the network,
+% each row is a data point and each column is a variable.
+% The data for the current node is in column 1, with its parents data in
+% subsequent columns
+CPT = zeros(size(datacsv,1),size(bncsv,2),size(bncsv,2)); 
+
 for column = bncsv; % For each column in the csv (node in the DAG)
-    % For each 1 in the column, we need the row number. Then we get that
-    % column in the data csv?
-    nodeData = datacsv(:,csvColumnIndex); % Data structure for storing the variable data we need
-    % Iterate through the column and check for 1's, this indicates an edge
-    % in the DAG and therefore the node associated with the 1 is a parent
-    % of the node we are currently looking at. If a 1 is present we need to
-    % get the associated nodes data for use
-    for idx = 1:numel(column) % For each element in the column
-        incoming_edge = column(idx); % Get the element
-        if incoming_edge == 1 % Check if we have a connection to that node
-            nodeData = horzcat(nodeData,datacsv(:,idx)); % Gather that nodes variable data
+    % For each 1 in the column, we have an edge from that node, so we add
+    % its data to our CPT
+    CPT(:,1,csvColumnIndex) = datacsv(:,csvColumnIndex); % Add the observed data for this node to the CPT
+    CPTIndex = 2; % Keep track of the Column in the CPT page we are storing data in
+    for indx = 1:numel(column) % For each element in the column
+        if column(indx) == 1 % Check if we have an incoming edge from that node
+            CPT(:,CPTIndex,csvColumnIndex) = datacsv(:,indx);
+            CPTIndex = CPTIndex +1;
         end
     end
-    csvColumnIndex = csvColumnIndex + 1;
-    
-    
+    csvColumnIndex = csvColumnIndex + 1;   
     
 end
