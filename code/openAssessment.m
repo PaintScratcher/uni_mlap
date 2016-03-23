@@ -11,16 +11,16 @@ csvColumnIndex = 1; % Keep track of what column in the csv we are reading
 % each row is a data point and each column is a variable.
 % The data for the current node is in column 1, with its parents data in
 % subsequent columns
-CPT = zeros(size(datacsv,1),size(bncsv,2),size(bncsv,2)); 
+CPT = cell(1,size(bncsv,2));
 
 for column = bncsv; % For each column in the csv (node in the DAG)
     % For each 1 in the column, we have an edge from that node, so we add
     % its data to our CPT
-    CPT(:,1,csvColumnIndex) = datacsv(:,csvColumnIndex); % Add the observed data for this node to the CPT
+    CPT{csvColumnIndex} = datacsv(:,csvColumnIndex); % Add the observed data for this node to the CPT
     CPTIndex = 2; % Keep track of the Column in the CPT page we are storing data in
     for indx = 1:numel(column) % For each element in the column
         if column(indx) == 1 % Check if we have an incoming edge from that node
-            CPT(:,CPTIndex,csvColumnIndex) = datacsv(:,indx);
+            CPT{csvColumnIndex} = [CPT{csvColumnIndex} datacsv(:,indx)];
             CPTIndex = CPTIndex +1;
         end
     end
