@@ -30,8 +30,10 @@ end
 for row = 1:size(datacsv,1) % For each data point
     global configurations;
     configurations = [];
+    numerators = [];
     split(datacsv(row,:)); % Recursively split the data point into multiple configurations, one for each possible value of each of the hidden variables
     for configuration = 1:size(configurations,1) % For each configuration
+        numerators(configuration) = 1; % Array to store the numerator for each configuration Bayes Calculation
         for variable = 1:numel(configurations(configuration,:)) % For each variable in the config
            parents = find(bncsv(:,variable)); % Find the parents of the variable
            configString = '';
@@ -39,11 +41,14 @@ for row = 1:size(datacsv,1) % For each data point
                configString = '0';
            else
                for parent = 1:size(parents,1) % Get the current value of all parents to build a binary string to be used for CPT indexing
-                   configString = strcat(configString, int2str(configurations(configuration,parents(parent))));
+                   configString = strcat(configString, int2str(configurations(configuration,parents(parent)))); % Add the variable state to the config string
                end
            end
-           columnIndex = bin2dec(configString) + 1;
-
+           columnIndex = bin2dec(configString) + 1; % Calculate the column for the CPT (+1 as the binary configs start at 0 and MATLAB indexes from 1)
+           probability = CPT{variable}(:,columnIndex); % Get the probability from the CPT
+           numerators(configuration) = numerators(configuration) * probability; % Calculate the current value for the Bayes calculation numerator
         end
+        denominator = sum(numerators); % Sum all the numerators to find the denominator
+        configurationWeights = numerators / denominator; % Perform the Bayes calculation to find the configuration weights
     end
 end
