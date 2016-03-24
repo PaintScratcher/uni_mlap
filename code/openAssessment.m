@@ -17,50 +17,55 @@ for iteration = 0:maxIterations
     iteration = iteration + 1;
     csvColumnIndex = 1; % Keep track of what column in the csv we are reading
     
-    for column = bncsv; % For each column in the csv (node in the DAG)
-        % For each 1 in the column, we have an edge from that node, so we
-        % generate its CPT
-        
-        parents = find(column==1);
-        numberOfParents = numel(parents); % Get the number of parents the node has
-        binaryPermutations = dec2bin(0:2^numberOfParents-1); % Compute the binary permutations for this number
-        
-        for permutation = 1:size(binaryPermutations,1) % For each possibility
-            permutation = binaryPermutations(permutation,:);
-            if iteration == 1 % First iteration, so we need to populate the CPT's with initial values
+    if iteration == 1 % First iteration, so we need to populate the CPT's with initial values
+        for column = bncsv; % For each column in the csv (node in the DAG)
+            % For each 1 in the column, we have an edge from that node, so we
+            % generate its CPT
+            
+            parents = find(column==1);
+            numberOfParents = numel(parents); % Get the number of parents the node has
+            binaryPermutations = dec2bin(0:2^numberOfParents-1); % Compute the binary permutations for this number
+            
+            for permutation = 1:size(binaryPermutations,1) % For each possibility
+                permutation = binaryPermutations(permutation,:);
                 CPT{csvColumnIndex}(bin2dec(permutation)+1) = initialConditionalProbabilities; % Save a conditional probability in the CPT for that permutation
-            else % Not the first iteration, so we need to run the M step
-                numberOfDataPoints = size(newData,1);
-                countForThisPermutation = 0;
-                totalCount = 0;
-                for dataPoint = 1:numberOfDataPoints  
-                    dataPointMatch = true;
-                    dataPoint = newData(dataPoint,:);
-                    if (dataPoint(csvColumnIndex) == 1)
-                        for parentNumber = 1:numberOfParents
-                            parent = parents(parentNumber);
-                            parentValue = dataPoint(parent);
-                            if int2str(parentValue) ~= (permutation(parentNumber))
-                                dataPointMatch = false;
-                                break;
-                            end
-                        end
-                        if dataPointMatch == true;
-                            countForThisPermutation = countForThisPermutation + dataPoint(end);
-%                             totalCount = totalCount + dataPoint(end);
-                            totalCount = totalCount + 1
-                        else
-%                             totalCount = totalCount + dataPoint(end);
-                            totalCount = totalCount + 1
-                        end
-                      
+%                 CPT{csvColumnIndex}(2,bin2dec(permutation)+1) = 0;
+            end
+            csvColumnIndex = csvColumnIndex + 1;
+        end
+    else % Not the first iteration, so we need to do the M-Step
+        numberOfDataPoints = size(newData,1);
+        totalCount = 0;
+        for dataPoint = 1:numberOfDataPoints % For each datapoint
+            dataPoint = newData(dataPoint,:);
+            variablesWith1 = find(dataPoint==1); % Find variables with a value of 1
+            for variable = variablesWith1
+                parents = find(bncsv(:,variable)==1);
+                if numel(parents) == 0
+                    configString = '0';
+                else
+                    configString = '';
+                    for parent = 1:size(parents,1)
+                        parent = parents(parent);
+                        configString = strcat(configString, int2str(dataPoint(parent)));
                     end
                 end
-                probability = countForThisPermutation / numberOfDataPoints;
+                columnIndex = bin2dec(configString) + 1;
+                if isempty(counts{variable}(2,columnIndex))
+                    counts{variable}(2,columnIndex) = dataPoint(end);
+                else
+                    counts{variable}(:,columnIndex) = counts{variable}(:,columnIndex) + dataPoint(end);
+                end
+                
+%                 if counts{variable}(:,columnIndex) < 1
+%                     CPT{variable}(:,columnIndex) = ;
+%                     totalCount = totalCount + 1;
+%                 else
+%                     counts{variable}(:,columnIndex) = counts{variable}(:,columnIndex) + 1;
+%                     totalCount = totalCount + 1;
+%                 end
             end
-            
         end
-        csvColumnIndex = csvColumnIndex + 1;
     end
     
     newData = [];
