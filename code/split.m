@@ -15,4 +15,3 @@ function [ configurations ] = split(row)
         end
     end    
 end
-
