@@ -1,20 +1,18 @@
 function [ configurations ] = split(row)
 %SPLIT Recursively split an input row with hidden variables into valid
 %configurations
-    hiddenColIndex = find(isnan(row)); % Partition the variables into hidden and visible
+    hiddenColIndex = find(isnan(row)); % Find the column number of each of the hidden variables
     global configurations;
-    if numel(hiddenColIndex) > 1
-%         disp 'greater than 1'
-        for binary = 0:1;
-           row(hiddenColIndex(1)) = binary;
-           split(row);
-        end
-    else
-        disp 'base case'
-        for binary = 0:1;
-           row(hiddenColIndex(1)) = binary; 
-           configurations = [configurations; row];
+    if numel(hiddenColIndex) == 1 % Base case, only one hidden variable left
+      for binary = 0:1; % For each possible value of the variable
+           row(hiddenColIndex(1)) = binary; % Set the hidden variable to a known
+           configurations = [configurations; row]; % Store the final configuration
            configurations
+      end
+    else % Not the base case, so we need to recurse deeper
+        for binary = 0:1; % For each possible value of the variable
+           row(hiddenColIndex(1)) = binary; % Set the hidden variable to a known
+           split(row); % Recurse to the next hidden variable
         end
     end    
 end
