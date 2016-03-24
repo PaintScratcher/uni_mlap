@@ -28,8 +28,8 @@ for iteration = 0:maxIterations
             
             for permutation = 1:size(binaryPermutations,1) % For each possibility
                 permutation = binaryPermutations(permutation,:);
-                CPT{csvColumnIndex}(bin2dec(permutation)+1) = initialConditionalProbabilities; % Save a conditional probability in the CPT for that permutation
-%                 CPT{csvColumnIndex}(2,bin2dec(permutation)+1) = 0;
+                CPT{csvColumnIndex}(1,bin2dec(permutation)+1) = initialConditionalProbabilities; % Save a conditional probability in the CPT for that permutation
+                CPT{csvColumnIndex}(2,bin2dec(permutation)+1) = 0;
             end
             csvColumnIndex = csvColumnIndex + 1;
         end
@@ -51,11 +51,11 @@ for iteration = 0:maxIterations
                     end
                 end
                 columnIndex = bin2dec(configString) + 1;
-                if isempty(counts{variable}(2,columnIndex))
-                    counts{variable}(2,columnIndex) = dataPoint(end);
-                else
-                    counts{variable}(:,columnIndex) = counts{variable}(:,columnIndex) + dataPoint(end);
-                end
+%                 if isempty(CPT{variable}(2,columnIndex))
+%                     CPT{variable}(2,columnIndex) = dataPoint(end);
+%                 else
+                CPT{variable}(:,columnIndex) = CPT{variable}(:,columnIndex) + dataPoint(end);
+%                 end
                 
 %                 if counts{variable}(:,columnIndex) < 1
 %                     CPT{variable}(:,columnIndex) = ;
@@ -89,7 +89,7 @@ for iteration = 0:maxIterations
                     end
                 end
                 columnIndex = bin2dec(configString) + 1; % Calculate the column for the CPT (+1 as the binary configs start at 0 and MATLAB indexes from 1)
-                probability = CPT{variable}(:,columnIndex); % Get the probability from the CPT
+                probability = CPT{variable}(1,columnIndex); % Get the probability from the CPT
                 numerators(:,configuration) = numerators(:,configuration) * probability; % Calculate the current value for the Bayes calculation numerator
             end
         end
