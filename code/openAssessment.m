@@ -6,7 +6,7 @@ datacsv = csvread(datacsvName);
 
 csvColumnIndex = 1; % Keep track of what column in the csv we are reading
 initialConditionalProbabilities = 0.5;
-
+laff = find(isnan(datacsv));
 
 % Create our CPT Data structure, with a page for each node in the network,
 % each row is a data point and each column is a variable.
@@ -30,6 +30,17 @@ for column = bncsv; % For each column in the csv (node in the DAG)
     csvColumnIndex = csvColumnIndex + 1;
 end
 
-for row = 1:size(datacsv,1)
+for row = 1:size(datacsv,1) % For each data point
     row = datacsv(row,:);
+    global configurations;
+    configurations = [];
+    split(row);
+%     hiddenColIndex = find(isnan(row)); % Partition the variables into hidden and visible
+%     visibleColIndex = find(~isnan(row));
+%     for variable = hiddenColIndex; % For each hidden variable
+%         for binary = 0:1; % For each binary value it can be
+%             row(variable) = binary;
+%         end
+%         
+%     end
 end
