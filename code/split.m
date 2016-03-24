@@ -7,7 +7,6 @@ function [ configurations ] = split(row)
       for binary = 0:1; % For each possible value of the variable
            row(hiddenColIndex(1)) = binary; % Set the hidden variable to a known
            configurations = [configurations; row]; % Store the final configuration
-           configurations
       end
     else % Not the base case, so we need to recurse deeper
         for binary = 0:1; % For each possible value of the variable
