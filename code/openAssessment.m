@@ -29,7 +29,8 @@ for iteration = 0:maxIterations
             for permutation = 1:size(binaryPermutations,1) % For each possibility
                 permutation = binaryPermutations(permutation,:);
                 CPT{csvColumnIndex}(1,bin2dec(permutation)+1) = initialConditionalProbabilities; % Save a conditional probability in the CPT for that permutation
-                CPT{csvColumnIndex}(2,bin2dec(permutation)+1) = 0;
+                CPT{csvColumnIndex}(2,bin2dec(permutation)+1) = 0; % Initialise a counter for 1's
+                CPT{csvColumnIndex}(3,bin2dec(permutation)+1) = 0; % Initialise a counter for 0's
             end
             csvColumnIndex = csvColumnIndex + 1;
         end
@@ -38,8 +39,6 @@ for iteration = 0:maxIterations
         totalCount = 0;
         for dataPoint = 1:numberOfDataPoints % For each datapoint
             dataPoint = newData(dataPoint,:);
-            variablesWith1 = find(dataPoint==1); % Find variables with a value of 1
-            for variable = variablesWith1
                 parents = find(bncsv(:,variable)==1);
                 if numel(parents) == 0
                     configString = '0';
@@ -54,6 +53,7 @@ for iteration = 0:maxIterations
 %                 if isempty(CPT{variable}(2,columnIndex))
 %                     CPT{variable}(2,columnIndex) = dataPoint(end);
 %                 else
+                if dataPoint == 
                 CPT{variable}(:,columnIndex) = CPT{variable}(:,columnIndex) + dataPoint(end);
 %                 end
                 
@@ -64,7 +64,6 @@ for iteration = 0:maxIterations
 %                     counts{variable}(:,columnIndex) = counts{variable}(:,columnIndex) + 1;
 %                     totalCount = totalCount + 1;
 %                 end
-            end
         end
     end
     
