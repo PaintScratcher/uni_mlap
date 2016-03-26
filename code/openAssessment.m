@@ -39,6 +39,8 @@ for iteration = 0:maxIterations
         totalCount = 0;
         for dataPoint = 1:numberOfDataPoints % For each datapoint
             dataPoint = newData(dataPoint,:);
+            for variable = 1:numel(dataPoint)-1
+                variableValue = dataPoint(variable);
                 parents = find(bncsv(:,variable)==1);
                 if numel(parents) == 0
                     configString = '0';
@@ -50,20 +52,12 @@ for iteration = 0:maxIterations
                     end
                 end
                 columnIndex = bin2dec(configString) + 1;
-%                 if isempty(CPT{variable}(2,columnIndex))
-%                     CPT{variable}(2,columnIndex) = dataPoint(end);
-%                 else
-                if dataPoint == 
-                CPT{variable}(:,columnIndex) = CPT{variable}(:,columnIndex) + dataPoint(end);
-%                 end
-                
-%                 if counts{variable}(:,columnIndex) < 1
-%                     CPT{variable}(:,columnIndex) = ;
-%                     totalCount = totalCount + 1;
-%                 else
-%                     counts{variable}(:,columnIndex) = counts{variable}(:,columnIndex) + 1;
-%                     totalCount = totalCount + 1;
-%                 end
+                if variableValue == 1
+                    CPT{variable}(2:3,columnIndex) = CPT{variable}(2:3,columnIndex) + dataPoint(end);
+                else
+                    CPT{variable}(3,columnIndex) = CPT{variable}(3,columnIndex) + dataPoint(end);
+                end
+            end
         end
     end
     
