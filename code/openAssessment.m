@@ -5,7 +5,7 @@ bncsv = csvread(bncsvName);
 datacsv = csvread(datacsvName);
 
 initialConditionalProbabilities = 0.5; % Value for the initial probabilities
-maxIterations = 1;
+maxIterations = 0;
 
 % Create our CPT Data structure, with a page for each node in the network
 % The data for the current node is in column 1, with its parents data in
@@ -48,7 +48,7 @@ for iteration = 0:maxIterations
         numerators = [];
         split(datacsv(row,:)); % Recursively split the data point into multiple configurations, one for each possible value of each of the hidden variables
         for configuration = 1:size(configurations,1) % For each configuration
-            numerators(:,configuration) = ones(size(configurations,1),1); % Array to store the numerator for each configuration Bayes Calculation
+            numerators(:,configuration) = 1; % Array to store the numerator for each configuration Bayes Calculation
             for variable = 1:numel(configurations(configuration,:)) % For each variable in the config
                 parents = find(bncsv(:,variable)); % Find the parents of the variable
                 configString = '';
@@ -60,13 +60,14 @@ for iteration = 0:maxIterations
                     end
                 end
                 columnIndex = bin2dec(configString) + 1; % Calculate the column for the CPT (+1 as the binary configs start at 0 and MATLAB indexes from 1)
+                % Cant do this
                 probability = CPT{variable}(1,columnIndex); % Get the probability from the CPT
                 numerators(:,configuration) = numerators(:,configuration) * probability; % Calculate the current value for the Bayes calculation numerator
             end
         end
-        denominator = sum(numerators); % Sum all the numerators to find the denominator
+        denominator = sum(numerators,2); % Sum all the numerators to find the denominator
         configurationWeights = numerators / denominator; % Perform the Bayes calculation to find the configuration weights
-        newData = [newData; configurations configurationWeights]; % Concatinate the configurations and their weights to generate a new dataset
+        newData = [newData; configurations configurationWeights']; % Concatinate the configurations and their weights to generate a new dataset
     end
     
     % M-Step
