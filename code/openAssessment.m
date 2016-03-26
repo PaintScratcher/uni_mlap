@@ -5,13 +5,13 @@ bncsv = csvread(bncsvName);
 datacsv = csvread(datacsvName);
 
 initialConditionalProbabilities = 0.5; % Value for the initial probabilities
-maxIterations = 0;
+maxIterations = 4;
 
 % Create our CPT Data structure, with a page for each node in the network
 % The data for the current node is in column 1, with its parents data in
 % subsequent columns
 CPT = cell(1,size(bncsv,2));
-
+    varVal = []
 % Initialise CPT's with initial conditional probabilities
 for iteration = 0:maxIterations
     iteration = iteration + 1;
@@ -60,7 +60,6 @@ for iteration = 0:maxIterations
                     end
                 end
                 columnIndex = bin2dec(configString) + 1; % Calculate the column for the CPT (+1 as the binary configs start at 0 and MATLAB indexes from 1)
-                % Cant do this
                 probability = CPT{variable}(1,columnIndex); % Get the probability from the CPT
                 numerators(:,configuration) = numerators(:,configuration) * probability; % Calculate the current value for the Bayes calculation numerator
             end
@@ -72,7 +71,6 @@ for iteration = 0:maxIterations
     
     % M-Step
     numberOfDataPoints = size(newData,1);
-    totalCount = 0;
     for dataPoint = 1:numberOfDataPoints % For each datapoint
         dataPoint = newData(dataPoint,:);
         for variable = 1:numel(dataPoint)-1
@@ -95,4 +93,5 @@ for iteration = 0:maxIterations
             end
         end
     end
+    varVal = [varVal; CPT{1}(1)]
 end
