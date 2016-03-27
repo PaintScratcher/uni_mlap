@@ -59,6 +59,8 @@ Now that we have a pairwise geodesic distance matrix for $X$ we can apply the cl
 All algorithms and formulas taken from \textit{'A Global Geometric Framework for Nonlinear Dimensionality Reduction'}\cite{tenenbaum2000global} except where cited.
 
 \subsection{4. Description of a paper}
+I chose\texit{'{Wireless sensor networks localization with isomap'} by Wang et al,\cite{wang2009wireless} found by searching the list of articles citing the Isomap paper on Google Scholar, because of the novel use of Isomap, not so much for its properties as dimensionality reduction but because it uses geodesic distances for pairwise dissimilarity. The application is to estimate the locations of wireless sensors in a network based on the received signal strength between sensors, using MDS. As the data is error prone over long distances  Isomap is used as an extension. Additionally, they developed a centralised system, where isomap is better suited due to its global algorithm, LLE is used in decentralised applications.\cite{patwari2004manifold} The primary problem they encountered was setting the number of neighbours to choose for step 1 of Isomap, they overcame this by using an adaptive parameter selection method.
+GRAPH REPRESENTATION?!
 \bibliography{report}{}
 \bibliographystyle{IEEEtranN}
 \end{document}
