@@ -65,17 +65,7 @@ for iteration = 0:maxIterations
         dataPoint = newData(dataPoint,:);
         for variable = 1:numel(dataPoint)-1
             variableValue = dataPoint(variable);
-            parents = find(bncsv(:,variable));
-            if numel(parents) == 0
-                configString = '0';
-            else
-                configString = '';
-                for parent = 1:size(parents,1)
-                    parent = parents(parent);
-                    configString = strcat(configString, int2str(dataPoint(parent)));
-                end
-            end
-            columnIndex = bin2dec(configString) + 1;
+            columnIndex = constructCPTColumnIndex(variable, bncsv, dataPoint);
             if variableValue == 1
                 CPT{variable}(2:3,columnIndex) = CPT{variable}(2:3,columnIndex) + dataPoint(end);
             else
