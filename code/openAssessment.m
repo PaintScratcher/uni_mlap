@@ -6,12 +6,13 @@ datacsv = csvread(datacsvName);
 
 initialConditionalProbabilities = 0.5; % Value for the initial probabilities
 maxIterations = 4;
-
+% profile on
 % Create our CPT Data structure, with a page for each node in the network
 % The data for the current node is in column 1, with its parents data in
 % subsequent columns
 CPT = cell(1,size(bncsv,2));
 % Initialise CPT's with initial conditional probabilities
+
 for iteration = 0:maxIterations
     iteration = iteration + 1;
     csvColumnIndex = 1; % Keep track of what column in the csv we are reading
@@ -75,3 +76,4 @@ for iteration = 0:maxIterations
     % Print Results for this iteration
     fprintf('Iteration %d. P(1=1) = %f \n',iteration,CPT{1}(1))
 end
+% profile viewer
