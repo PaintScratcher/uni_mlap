@@ -11,7 +11,6 @@ maxIterations = 4;
 % The data for the current node is in column 1, with its parents data in
 % subsequent columns
 CPT = cell(1,size(bncsv,2));
-varVal = [];
 % Initialise CPT's with initial conditional probabilities
 for iteration = 0:maxIterations
     iteration = iteration + 1;
@@ -38,10 +37,8 @@ for iteration = 0:maxIterations
         csvColumnIndex = csvColumnIndex + 1;
     end
     
-    
-    newData = [];
-    
     % E-Step
+    newData = [];
     for row = 1:size(datacsv,1) % For each data point
         global configurations;
         configurations = [];
@@ -73,5 +70,4 @@ for iteration = 0:maxIterations
             end
         end
     end
-    varVal = [varVal; CPT{1}(1)];
 end
