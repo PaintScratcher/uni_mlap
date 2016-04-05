@@ -1,12 +1,11 @@
-bncsvName = '../data/bnprinter.csv';
-datacsvName = '../data/bnprinterdata.csv';
+function []= openAssessment( bncsvName, datacsvName, initialConditionalProbabilities)
 
 bncsv = csvread(bncsvName);
 datacsv = csvread(datacsvName);
 
-initialConditionalProbabilities = 0.5; % Value for the initial probabilities
 iteration = 0;
 totalLogLikelihood = 0;
+logLikelihoodStore = [];
 % profile on
 % Create our CPT Data structure, with a page for each node in the network
 % The data for the current node is in column 1, with its parents data in
@@ -93,6 +92,7 @@ while 1
             dataPointLikelihood = dataPointLikelihood + configurationLikelihood;
         end
         totalLogLikelihood = totalLogLikelihood + log(dataPointLikelihood);
+        logLikelihoodStore(iteration) = totalLogLikelihood;
     end
     
     % Print Results for this iteration
@@ -118,7 +118,14 @@ while 1
             end
             fprintf('\n')
         end
+        figure
+        plot(logLikelihoodStore);
+        titleString = sprintf('log-loglikelihood by iteration for an intial value of %f.',initialConditionalProbabilities);
+        title(titleString);
+        xlabel('Iteration')
+        ylabel('log-likelihood')
         break;
     end
 end
 % profile viewer
+end
