@@ -48,7 +48,8 @@ for iteration = 0:maxIterations
             numerators(:,configuration) = 1; % Array to store the numerator for each configuration Bayes Calculation
             for variable = 1:numel(configurations(configuration,:)) % For each variable in the config
                 columnIndex = constructCPTColumnIndex(variable, bncsv, configurations(configuration,:));
-                probability = CPT{variable}(1,columnIndex); % Get the probability from the CPT
+                variableValue = configurations(configuration,variable);
+                probability = getProbability(CPT, variable, variableValue, columnIndex); % Get the probability from the CPT
                 numerators(:,configuration) = numerators(:,configuration) * probability; % Calculate the current value for the Bayes calculation numerator
             end
         end
