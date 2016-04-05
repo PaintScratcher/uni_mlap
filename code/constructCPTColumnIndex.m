@@ -6,6 +6,6 @@ if numel(parents) == 0 % Variable has no parents
     columnIndex = 1;
 else
     parentValues = configuration(parents);
-    columnIndex = bi2de(parentValues) + 1; % Calculate the column for the CPT (+1 as the binary configs start at 0 and MATLAB indexes from 1)
+    columnIndex = b2d(parentValues) + 1; % Calculate the column for the CPT (+1 as the binary configs start at 0 and MATLAB indexes from 1)
 end
 end
