@@ -5,7 +5,7 @@ bncsv = csvread(bncsvName);
 datacsv = csvread(datacsvName);
 
 initialConditionalProbabilities = 0.5; % Value for the initial probabilities
-maxIterations = 4;
+maxIterations = 88;
 % profile on
 % Create our CPT Data structure, with a page for each node in the network
 % The data for the current node is in column 1, with its parents data in
@@ -73,7 +73,28 @@ for iteration = 0:maxIterations
         end
     end
     
+    % Calculate log-likelihood for this iteration
+    totalLogLikelihood = 0;
+    for row = 1:size(datacsv,1) % For each data point
+        global configurations;
+        configurations = [];
+        split(datacsv(row,:)); % Recursively split the data point into multiple configurations, one for each possible value of each of the hidden variables
+        dataPointLikelihood = 0;
+        for configuration = 1:size(configurations,1) % For each configuration
+            configurationLikelihood = 1;
+            for variable = 1:numel(configurations(configuration,:)) % For each variable in the config
+                columnIndex = constructCPTColumnIndex(variable, bncsv, configurations(configuration,:));
+                variableValue = configurations(configuration,variable);
+                probability = getProbability(CPT, variable, variableValue, columnIndex); % Get the probability from the CPT
+                configurationLikelihood = configurationLikelihood * probability;
+            end
+            dataPointLikelihood = dataPointLikelihood + configurationLikelihood;
+        end
+        totalLogLikelihood = totalLogLikelihood + log(dataPointLikelihood);
+    end
+    
     % Print Results for this iteration
-    fprintf('Iteration %d. P(1=1) = %f \n',iteration,CPT{1}(1))
+%     fprintf('Iteration %d. P(1=1) = %f \n',iteration,CPT{1}(1))
+      fprintf('Iteration %d. Log-likelihood is currently: %f \n',iteration, totalLogLikelihood)
 end
 % profile viewer
