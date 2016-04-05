@@ -11,7 +11,7 @@ maxIterations = 4;
 % The data for the current node is in column 1, with its parents data in
 % subsequent columns
 CPT = cell(1,size(bncsv,2));
-    varVal = []
+varVal = [];
 % Initialise CPT's with initial conditional probabilities
 for iteration = 0:maxIterations
     iteration = iteration + 1;
@@ -50,16 +50,7 @@ for iteration = 0:maxIterations
         for configuration = 1:size(configurations,1) % For each configuration
             numerators(:,configuration) = 1; % Array to store the numerator for each configuration Bayes Calculation
             for variable = 1:numel(configurations(configuration,:)) % For each variable in the config
-                parents = find(bncsv(:,variable)); % Find the parents of the variable
-                configString = '';
-                if size(parents,1) == 0 % Variable has no parents
-                    configString = '0'; % Create a config string such that the column index will be 1
-                else
-                    for parent = 1:size(parents,1) % Get the current value of all parents to build a binary string to be used for CPT indexing
-                        configString = strcat(configString, int2str(configurations(configuration,parents(parent)))); % Add the variable state to the config string
-                    end
-                end
-                columnIndex = bin2dec(configString) + 1; % Calculate the column for the CPT (+1 as the binary configs start at 0 and MATLAB indexes from 1)
+                columnIndex = constructCPTColumnIndex(variable, bncsv, configurations(configuration,:));
                 probability = CPT{variable}(1,columnIndex); % Get the probability from the CPT
                 numerators(:,configuration) = numerators(:,configuration) * probability; % Calculate the current value for the Bayes calculation numerator
             end
@@ -70,12 +61,11 @@ for iteration = 0:maxIterations
     end
     
     % M-Step
-    numberOfDataPoints = size(newData,1);
-    for dataPoint = 1:numberOfDataPoints % For each datapoint
+    for dataPoint = 1:size(newData,1) % For each datapoint
         dataPoint = newData(dataPoint,:);
         for variable = 1:numel(dataPoint)-1
             variableValue = dataPoint(variable);
-            parents = find(bncsv(:,variable)==1);
+            parents = find(bncsv(:,variable));
             if numel(parents) == 0
                 configString = '0';
             else
@@ -93,5 +83,5 @@ for iteration = 0:maxIterations
             end
         end
     end
-    varVal = [varVal; CPT{1}(1)]
+    varVal = [varVal; CPT{1}(1)];
 end
