@@ -5,7 +5,8 @@ bncsv = csvread(bncsvName);
 datacsv = csvread(datacsvName);
 
 initialConditionalProbabilities = 0.5; % Value for the initial probabilities
-maxIterations = 88;
+iteration = 0;
+totalLogLikelihood = 0;
 % profile on
 % Create our CPT Data structure, with a page for each node in the network
 % The data for the current node is in column 1, with its parents data in
@@ -13,7 +14,7 @@ maxIterations = 88;
 CPT = cell(1,size(bncsv,2));
 % Initialise CPT's with initial conditional probabilities
 
-for iteration = 0:maxIterations
+while 1
     iteration = iteration + 1;
     csvColumnIndex = 1; % Keep track of what column in the csv we are reading
     
@@ -74,6 +75,7 @@ for iteration = 0:maxIterations
     end
     
     % Calculate log-likelihood for this iteration
+    previousLogLikelihood = totalLogLikelihood;
     totalLogLikelihood = 0;
     for row = 1:size(datacsv,1) % For each data point
         global configurations;
@@ -94,7 +96,25 @@ for iteration = 0:maxIterations
     end
     
     % Print Results for this iteration
-%     fprintf('Iteration %d. P(1=1) = %f \n',iteration,CPT{1}(1))
-      fprintf('Iteration %d. Log-likelihood is currently: %f \n',iteration, totalLogLikelihood)
+    %     fprintf('Iteration %d. P(1=1) = %f \n',iteration,CPT{1}(1))
+    fprintf('Iteration %d. Log-likelihood is currently: %f \n',iteration, totalLogLikelihood)
+    
+    % Detect Convergence
+    if abs(totalLogLikelihood - previousLogLikelihood) < 0.0001
+        fprintf('Convergence in %d steps \n', iteration);
+        for variable = 1:size(datacsv,2);
+            parents = find(bncsv(:,variable));
+            numberOfParents = numel(parents); % Get the number of parents the node has
+            binaryPermutations = dec2bin(0:2^numberOfParents-1); % Compute the binary permutations for this number
+            fprintf('Variable %d has these parents (%s\b\b)\n',variable -1,sprintf('%d, ', parents -1))
+            for permutation = 1:size(binaryPermutations,1) % For each possibility
+                permutation = binaryPermutations(permutation,:);
+                probability = CPT{variable}(1,bin2dec(permutation)+1);
+                fprintf('P(%d=1|(%s\b\b)) = %d \n',variable -1,sprintf('''%c'', ', permutation), probability)
+            end
+            fprintf('\n')
+        end
+        break;
+    end
 end
 % profile viewer
