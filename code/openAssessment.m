@@ -110,7 +110,11 @@ while 1
             for permutation = 1:size(binaryPermutations,1) % For each possibility
                 permutation = binaryPermutations(permutation,:);
                 probability = CPT{variable}(1,bin2dec(permutation)+1);
-                fprintf('P(%d=1|(%s\b\b)) = %d \n',variable -1,sprintf('''%c'', ', permutation), probability)
+                if numberOfParents == 0
+                    fprintf('P(%d=1|() = %d \n',variable -1, probability)
+                else
+                    fprintf('P(%d=1|(%s\b\b)) = %d \n',variable -1,sprintf('''%c'', ', permutation), probability)
+                end
             end
             fprintf('\n')
         end
