@@ -70,4 +70,7 @@ for iteration = 0:maxIterations
             end
         end
     end
+    
+    % Print Results for this iteration
+    fprintf('Iteration %d. P(1=1) = %f \n',iteration,CPT{1}(1))
 end
