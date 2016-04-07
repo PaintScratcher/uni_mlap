@@ -3,7 +3,9 @@ function [ configurations ] = split(row)
 %configurations
     hiddenColIndex = find(isnan(row)); % Find the column number of each of the hidden variables
     global configurations;
-    if numel(hiddenColIndex) == 1 % Base case, only one hidden variable left
+    if numel(hiddenColIndex) == 0 % There are no hidden variables so we just return the row 
+       configurations = row; 
+    elseif numel(hiddenColIndex) == 1 % Base case, only one hidden variable left
       for binary = 0:1; % For each possible value of the variable
            row(hiddenColIndex(1)) = binary; % Set the hidden variable to a known
            configurations = [configurations; row]; % Store the final configuration

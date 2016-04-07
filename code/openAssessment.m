@@ -1,11 +1,14 @@
-function []= openAssessment( bncsvName, datacsvName, initialConditionalProbabilities)
+function []= openAssessment( bncsvName, datacsvName)
+bncsvName = '../data/bnprinterTask2.csv';
+datacsvName = '../data/bnprinterdataTeST.csv';
+
 bncsv = csvread(bncsvName);
 datacsv = csvread(datacsvName);
 
 iteration = 0;
 totalLogLikelihood = 0;
 logLikelihoodStore = [];
-% profile on
+initialConditionalProbabilities = 0.5;
 % Create our CPT Data structure, with a page for each node in the network
 % The data for the current node is in column 1, with its parents data in
 % subsequent columns
@@ -29,7 +32,12 @@ while 1
             if iteration == 1
                 CPT{csvColumnIndex}(1,bin2dec(permutation)+1) = initialConditionalProbabilities; % Save a conditional probability in the CPT for that permutation
             else
-                CPT{csvColumnIndex}(1,bin2dec(permutation)+1) = CPT{csvColumnIndex}(2,bin2dec(permutation)+1) / CPT{csvColumnIndex}(3,bin2dec(permutation)+1);
+                probability = CPT{csvColumnIndex}(2,bin2dec(permutation)+1) / CPT{csvColumnIndex}(3,bin2dec(permutation)+1);
+                if isnan(probability)
+                    CPT{csvColumnIndex}(1,bin2dec(permutation)+1) = 0;
+                else
+                    CPT{csvColumnIndex}(1,bin2dec(permutation)+1) = probability;
+                end
             end
             CPT{csvColumnIndex}(2,bin2dec(permutation)+1) = 0; % Initialise a counter for 1's
             CPT{csvColumnIndex}(3,bin2dec(permutation)+1) = 0; % Initialise a counter for 0's
@@ -127,5 +135,4 @@ while 1
         break;
     end
 end
-% profile viewer
 end
