@@ -6,10 +6,18 @@
 \begin{document}
 \title{Machine Learning and Applications (MLAP) Open Assessment}
 \author{Exam Number: Y0070813}
+\date{\vspace{-5ex}}
 \maketitle
 %\tableofcontents
+TODO - Check what happens if we take a log(0) - do we immediately quit or add 0 or something?
 \section{Task 1}
-Description of implementation
+Code is given in \textit{FILENAME} and can be executed by running the following command: 
+
+
+In the E-step I split each data-point into a set of configurations, one for every permutation of the hidden variables. I then calculate the Bayesian joint probability for each permutation, which acts as a weight in the M-step. This weight is normalised such that they sum to 1, providing a probability distribution for every combination in a data-row. 
+In the M-Step I use this new dataset to count the number of times a variable is 1 given each of its parent states, this allows me to calculate the probabilities that are used in the E-step. For each variable in each data-point, I detect its parental state and increment the numerator or denominator depending on the variable state, the fraction is then evaluated to find the probability. 
+To generate the log-likelihood I sum the log-likelihoods for each data-point, which is calculated by summing the likelihood for each permutation of the data-point's hidden variables, which is itself a product of the probability of each variable.
+To detect the convergence of the algorithm I store the Log-likelihood for the previous iteration and compare it to the value calculated on the current iteration, if the difference is greater than 0.0001 then I report convergence.
 \section{Task 2}
 The adaptation of the code was achieved by writing a wrapper function \textit{FILENAME} to run the main code base with multiple initial starting values, additionally a parameter can be sent to the main file to allow the plotting of the log likelihood for each run. \\ 
 The EM algorithm finds the local maximum for the Maximum Likelihood Estimator, therefore if there is a multi-modal distribution it is possible that the EM algorithm will not find the global maximum and instead one of many possible local maximums. Additionally, in the case of Bayesian Networks where the posterior probability is calculated from a combination of a prior distribution and a series of observations, if we ensure that there are no observations for a variable its posterior distribution will be based entirely on the prior distribution. To demonstrate this I have used the printer nightmare network again but by removing the observations for variable 1 and 3 I ensure that the posterior distribution, and therefore the parameters chosen by the EM algorithm, are only influenced by the prior distribution, in this case the initial values for the conditional probability. The network topography and dataset used are given in \textit{text} and \textit{text} respectively. \\
