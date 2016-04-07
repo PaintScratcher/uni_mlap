@@ -7,12 +7,12 @@ function [ configurations ] = split(row)
        configurations = row; 
     elseif numel(hiddenColIndex) == 1 % Base case, only one hidden variable left
       for binary = 0:1; % For each possible value of the variable
-           row(hiddenColIndex(1)) = binary; % Set the hidden variable to a known
+           row(hiddenColIndex(1)) = binary; % Set the hidden variable to a known value
            configurations = [configurations; row]; % Store the final configuration
       end
     else % Not the base case, so we need to recurse deeper
         for binary = 0:1; % For each possible value of the variable
-           row(hiddenColIndex(1)) = binary; % Set the hidden variable to a known
+           row(hiddenColIndex(1)) = binary; % Set the hidden variable to a known value
            split(row); % Recurse to the next hidden variable
         end
     end    

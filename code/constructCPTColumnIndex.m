@@ -2,10 +2,10 @@ function [ columnIndex ] = constructCPTColumnIndex( variable, bncsv, configurati
 %CONSTRUCTCONFIGSTRING Construct a config string for CPT indexing based on
 %the status of each variable and its parents
 parents = find(bncsv(:,variable)); % Find the parents of the variable
-if numel(parents) == 0 % Variable has no parents
+if numel(parents) == 0 % Variable has no parents so default to using the first column
     columnIndex = 1;
 else
-    parentValues = configuration(parents);
+    parentValues = configuration(parents); % find the values the parents currently have
     columnIndex = b2d(parentValues) + 1; % Calculate the column for the CPT (+1 as the binary configs start at 0 and MATLAB indexes from 1)
 end
 end
