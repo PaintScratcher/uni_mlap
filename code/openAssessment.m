@@ -1,5 +1,4 @@
 function []= openAssessment( bncsvName, datacsvName, initialConditionalProbabilities)
-
 bncsv = csvread(bncsvName);
 datacsv = csvread(datacsvName);
 
@@ -51,6 +50,7 @@ while 1
                 columnIndex = constructCPTColumnIndex(variable, bncsv, configurations(configuration,:));
                 variableValue = configurations(configuration,variable);
                 probability = getProbability(CPT, variable, variableValue, columnIndex); % Get the probability from the CPT
+                probability = round(probability,10);
                 numerators(:,configuration) = numerators(:,configuration) * probability; % Calculate the current value for the Bayes calculation numerator
             end
         end
