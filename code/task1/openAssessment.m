@@ -1,13 +1,11 @@
-% function []= openAssessment( bncsvName, datacsvName, initialValues)
-bncsvName = '../../data/bnprinter.csv';
-datacsvName = '../../data/bnprinterdata.csv';
-initialValues = 'initialValues.csv';
+function []= openAssessment(bncsvName, datacsvName)
+
 bncsv = csvread(bncsvName); % Read in the CSV files
 datacsv = csvread(datacsvName);
-initialValuescsv = csvread(initialValues);
 
 iteration = 0; % Variable to keep count of the iteration we are on
 totalLogLikelihood = 0; % Store the total log likelihood
+initialConditionalProbabilities = 0.5; % The value to initialise all probabilities to
 % Create our CPT Data structure, with a page for each node in the network
 % The data for the current node is in column 1, with its parents data in
 % subsequent columns depending on their state
@@ -28,7 +26,7 @@ while 1 % Loop until we reach convergence
         for permutation = 1:size(binaryPermutations,1) % For each possibility
             permutation = binaryPermutations(permutation,:);
             if iteration == 1 % For the first iteration we initialise the probabilities with the initial value
-                CPT{csvColumnIndex}(1,bin2dec(permutation)+1) = initialValuescsv(bin2dec(permutation)+1, csvColumnIndex); % Save a conditional probability in the CPT for that permutation
+                CPT{csvColumnIndex}(1,bin2dec(permutation)+1) = initialConditionalProbabilities; % Save a conditional probability in the CPT for that permutation
             else % This is not the first iteration so we need to calculate the probability using the counts from the previous M-Step
                 probability = CPT{csvColumnIndex}(2,bin2dec(permutation)+1) / CPT{csvColumnIndex}(3,bin2dec(permutation)+1); % Number of times variable is 1 divided by number of times the parent condition occured
                 if isnan(probability) % If we have divided by 0 and caused NaN, set the probability to 0 for nicer display
@@ -56,7 +54,7 @@ while 1 % Loop until we reach convergence
                 columnIndex = constructCPTColumnIndex(variable, bncsv, configurations(configuration,:)); % Construct the CPT column index for this configuration so we read from the correct place
                 variableValue = configurations(configuration,variable); % Get the value of the current variable so we know if we need to minus the stored probability from 1 or not
                 probability = getProbability(CPT, variable, variableValue, columnIndex); % Get the probability from the CPT
-%                 probability = round(probability,10); % Round the probability to avoid floating point errors at a high number of iterations
+%                 probability = round(probability,15); % Round the probability to avoid floating point errors at a high number of iterations
                 numerators(:,configuration) = numerators(:,configuration) * probability; % Calculate the current value for the Bayes calculation numerator
             end
         end
@@ -125,4 +123,4 @@ while 1 % Loop until we reach convergence
         break;
     end
 end
-% end
+end
