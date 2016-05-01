@@ -1,4 +1,4 @@
-function []= openAssessment( bncsvName, datacsvName)
+% function []= openAssessment( bncsvName, datacsvName)
 bncsvName = '../data/bnprinter.csv';
 datacsvName = '../data/bnprinterdata.csv';
 
@@ -133,4 +133,4 @@ while 1 % Loop until we reach convergence
         break;
     end
 end
-end
+% end
