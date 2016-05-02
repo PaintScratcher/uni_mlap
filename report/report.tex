@@ -176,7 +176,9 @@ A constraint on the usage of LLE and Laplacian eigenmaps is that the dimensional
 
 Computational complexity is also a consideration when comparing the algorithms. ISOMAP is significantly more complex to calculate due to the geodesic distances being calculated and therefore can be problematic when applied to very large datasets. On the otherhand, LLE and laplacian eigenmaps can take advange of sparse matrix computations when they are calculating eigen pairs and as such scale much better to large datasets. However, ISOMAP is the only algorithm with a guarentee of global optimality.
 
-If there are 
+Sparsity in the data, unconnected graphs etc
+
+LLE Definately doesnt handle noise well
 
 Uniform vs non-uniform sampling.
 \subsection{Describing the methods mathematically}
