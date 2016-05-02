@@ -14,17 +14,24 @@ TODO - Check what happens if we take a log(0) - do we immediately quit or add 0 
  - 3.3.1 least squares error for finding weightings
 - Laplacian eigenmaps needs to have the eigenvectors calculated for each unconnected sub-graph
 \section{Task 1}
-Code is given in \textit{FILENAME} and can be executed by running the following command: 
+Code is given in \textit{code/task1/openAssessment.m} and can be executed by running the following command from the task1 directory: \\
+\textbf{matlab -nosplash -nodesktop -nofigurewindow -r "openAssessment('\$network.csv','\$data.csv')"}\\
 
 
-In the E-step I split each data-point into a set of configurations, one for every permutation of the hidden variables. I then calculate the Bayesian joint probability for each permutation, which acts as a weight in the M-step. This weight is normalised such that they sum to 1, providing a probability distribution for every combination in a data-row. 
-In the M-Step I use this new dataset to count the number of times a variable is 1 given each of its parent states, this allows me to calculate the probabilities that are used in the E-step. For each variable in each data-point, I detect its parental state and increment the numerator or denominator depending on the variable state, the fraction is then evaluated to find the probability. 
+In the E-step each data-point is split into a set of permutations, one for every combination of the hidden variables. I then calculate the Bayesian likelihood for each permutation, which acts as a weight in the M-step. This weight is normalised such that they sum to 1, providing a probability distribution for every combination in a data-row. 
+
+In the M-Step I use this imputed dataset to count the number of times each variable is 1 given each of its parent states and each time the parent state occurs, dividing these through calculates the probabilities that are used in the next E-step. 
+
 To generate the log-likelihood I sum the log-likelihoods for each data-point, which is calculated by summing the likelihood for each permutation of the data-point's hidden variables, which is itself a product of the probability of each variable.
+
 To detect the convergence of the algorithm I store the Log-likelihood for the previous iteration and compare it to the value calculated on the current iteration, if the difference is greater than 0.0001 then I report convergence.
 \section{Task 2}
-The adaptation of the code was achieved by writing a wrapper function \textit{FILENAME} to run the main code base with multiple initial starting values, additionally a parameter can be sent to the main file to allow the plotting of the log likelihood for each run. \\ 
-The EM algorithm finds the local maximum for the Maximum Likelihood Estimator, therefore if there is a multi-modal distribution it is possible that the EM algorithm will not find the global maximum and instead one of many possible local maximums. Additionally, in the case of Bayesian Networks where the posterior probability is calculated from a combination of a prior distribution and a series of observations, if we ensure that there are no observations for a variable its posterior distribution will be based entirely on the prior distribution. To demonstrate this I have used the printer nightmare network again but by removing the observations for variable 1 and 3 I ensure that the posterior distribution, and therefore the parameters chosen by the EM algorithm, are only influenced by the prior distribution, in this case the initial values for the conditional probability. The network topography and dataset used are given in \textit{text} and \textit{text} respectively. \\
-Using multiple different initial probabilities and comparing results, the values of 0.3 and 0.7 are chosen. These two initial values cause their variables parameter to be the initial value, and also have effect on child variables. This is shown in the table below. Additionally a plot of the log-likelihood against the EM iteration number is shown for both initial values.
+The adaptation of the code was achieved by allowing a file to be given to the main function which specifies each individual starting conditional probability. The adapted code is given in \textit{code/task2/openAssessment.m} and can be executed by running the following command from the task2 directory:\\
+\textbf{matlab -nosplash -nodesktop -nofigurewindow -r "openAssessment('\$network.csv','\$data.csv', '\$initialValues.csv')"} \\\\
+
+The EM algorithm finds the local maximum for the Maximum Likelihood Estimator, therefore if there is a multi-modal distribution it is possible that the EM algorithm will not find the global maximum and instead one of many possible local maximums. Additionally, in the case of Bayesian Networks where the posterior probability is calculated from a combination of a prior distribution and a series of observations, if we ensure that there are no observations for a variable its posterior distribution will be based entirely on the prior distribution. To demonstrate this I have used the printer nightmare network again but by removing the observations for variable 1 and 3 I ensure that the posterior distribution, and therefore the parameters chosen by the EM algorithm, are only influenced by the prior distribution, in this case the initial values for the conditional probability. The network topography and dataset used are given in \textit{text} and \textit{text} respectively. 
+
+Although the adapted code can take invidivdual starting probabilities for each variable, using single values across all variables also demonstrates this. 0.3 and 0.7 are chosen as these two initial values cause their variables parameter to be the initial value, and also have effect on child variables. This is shown in the table below. Additionally a plot of the log-likelihood against the EM iteration number is shown for both initial values.
 
 \begin{center}
 \begin{tabular}{|p{7cm}|p{7cm}|}
@@ -148,50 +155,31 @@ Using multiple different initial probabilities and comparing results, the values
 \includegraphics[width=0.7\linewidth]{images/LL7}
 \label{fig:LL7}
 \end{figure}
-\textit{Graphs showing the log-likelihood against EM iteration number for initial values of 0.3 and 0.7, note the significantly larger number of iterations required to converge in the case of 0.3.}\\\\
-
-Overcoming the dependence on initial values can be achieved either by using standard methods of minimising the risk of finding local maxima, such as simulated annealing or more simply random restart hill climbing. Ueda et al. developed a deterministic annealing algorithm for EM.\cite{ueda1998deterministic}
+\textit{Graphs showing the log-likelihood against EM iteration number for initial values of 0.3 and 0.7, note the significantly larger number of iterations required to converge in the case of 0.3.}
+\newpage
+Overcoming the dependence on initial values can be achieved either by using standard methods of minimising the risk of finding local maxima, such as simulated annealing or more simply random restart hill climbing. Ueda et al. developed a deterministic annealing algorithm for EM.\cite{ueda1998deterministic} Alternatively, analysing the data to find clusters and choosing values based on this analysis has been explored, Karlis and Xekalaki\cite{karlis2003choosing} investigated several methods of \textit{'bootstrapping'} initial values using algorithms, for example by finding the means of the clusters in the data and using those as initial values.
 
 \section{Task 3}
-\subsection{1. Qualitative Description of the algorithms}
+\subsection{Qualitative Description of the algorithms}
 \subsubsection{Locally Linear Embedding}
 LLE first generates a list of neighbours for each data-point on the manifold. Then, using the assumption that the neighbourhood lies on a locally linear plane, a barycentric coordinate for each data-point as a series of weights for each of its neighbours such that the data-point can be re-constructed as a linear combination of its neighbours. These weights are then used in the lower dimensional space to re-construct the data-point. As each locally linear neighbourhood is overlapping, it is possible to re-construct the entire dataset in the low dimensional space. An error function is used for both the weight generation and point re-construction phases, to produce an optimal solution.
 \subsubsection{Laplacian eigenmaps}
 In this algorithm, we first generate a neighbourhood graph. Then a weight is applied to each edge, using one of two methods, either simply applying a weight of 1 for each edge (simple-minded) or by using a heat kernel. A Laplacian matrix is then generated from the weight matrix and its diagonal. By solving the generalized eigenvector problem for this Laplacian matrix and the weight matrix you find several solutions. These solutions are then ordered my ascending sizes of the eigenvalues. After removing the first eigenvalue, which will be zero, each of these solutions can be used as an embedding dimension for each data-point.
 \subsubsection{Isomap}
 Isomap can be thought of as an extension of Multi Dimensional Scaling, as it attempts to plot every data point in a lower dimensional space such that the high dimensional distances between data-points are maintained as best as possible. The distance metric is an estimate of geodesic distance between points over the manifold, generated by summing the euclidean distance between nodes on the shortest path between the nodes over a neighbourhood graph. Step 1 generates the neighbourhood graph, either with k-nearest neighbours or fixed radius, then the shortest paths between nodes are calculated and finally the estimated geodesic distance is used to apply MDS.
-\subsection{2. Comparing the methods for embedding data into vector space}
-The primary difference between the embeddings produced by ISOMAP in comparison to those generated by LLE and laplacian eigenmaps is the ability to represent the global structure of the data. As both LLE and LE are local techniques, the relationships between data points are only maintained over a local neighbourhood, with the global structure of the data potentially being warped or changed. On the other hand, ISOMAP ensures that the global structure of the data is concerved along with the local relationships. Therefore, on a global scale ISOMAP will produce a more truthful representation of the high dimensional data than LLE or LE. 
-ISOMAP PROS
-preserves global structure
-few free parameters
-Guarantee of globally optimality
-ISOMAP CONS
-difficulties with holes in manifold
-Sensitive to noise - short circuit 
-Computationally intense due to dense matrix eigen reduction 
-LLE PROS
-No Local minima
-one free parameter
-simply linear algebra operations - so quick - eigenvectors from sparse matrices 
-LLE CONS
-Problemeatic when the data is disconnected
-Intrinsic DImensionality must be known a priori for LE and LLE!**
-can distort global structure 
-***Seems to crush clusters into a single point?
-Requires dense datapoints
-LE PROS
-Intrinsically emphasizes natural clusters 
-stability due to intrinsic consideration of manifold structure
-LE CONS
-Has problems with non-uniform sampling?
+\subsection{Comparing the methods for embedding data into vector space}
+The primary difference between the embeddings produced by ISOMAP in comparison to those generated by LLE and laplacian eigenmaps is the ability to represent the global structure of the data. As both LLE and LE are local techniques, the relationships between data points are only assured to be maintained over a local neighbourhood, with the global structure of the data potentially being warped or changed. On the other hand, ISOMAP ensures that the global structure of the data is concerved along with the local relationships, this is called having an isometric embedding. LLE has conformal embedding, as it replicates distances locally. Laplacian eigenmaps have an embedding similar to conformal embedding, but this has not been proven.\cite{cayton2005algorithms} Therefore, on a global scale ISOMAP will produce a more truthful representation of the high dimensional data than LLE or LE. 
 
-local vs global methods
-- Global gives more faithful representation of the global structure
-- Local is more computationally efficient due to sparse matrix computations 
-- Local may give useful results on a broader range of manifolds
-http://papers.nips.cc/paper/2141-global-versus-local-methods-in-nonlinear-dimensionality-reduction.pdf
-\subsection{3. Describing the methods mathematically}
+As ISOMAP preserves global structure via geodesic distances over the manifold it is much more suceptible to so called \textit{short circuit} errors, where the neighbourhood radius chosen is bigger than features in the manifold, such that points in the neighourhood are on opposite sides of a gap in the manifold. This can also happen in LLE and Laplacian eigenmaps but as the embeddings are local the problem is minimised. In ISOMAP, a single short circuted distance can have a knock on effect on many of the geodesic distances used for finding shortest paths over the graph. For this reason, ISOMAP is generally restricted to manifolds with intrinsicly convex data as holes in the data will cause problems, convex parameter space is not a requirement for LLE and Laplacian algorithms.
+
+A constraint on the usage of LLE and Laplacian eigenmaps is that the dimensionality of the high dimensional space must be known before the alogrithms are run, as they are used in the algorithms to generate the embedding. This is not the case with ISOMAP and so it can be used in cases where this information is not avaliable. 
+
+Computational complexity is also a consideration when comparing the algorithms. ISOMAP is significantly more complex to calculate due to the geodesic distances being calculated and therefore can be problematic when applied to very large datasets. On the otherhand, LLE and laplacian eigenmaps can take advange of sparse matrix computations when they are calculating eigen pairs and as such scale much better to large datasets. However, ISOMAP is the only algorithm with a guarentee of global optimality.
+
+If there are 
+
+Uniform vs non-uniform sampling.
+\subsection{Describing the methods mathematically}
 \subsubsection{Locally Linear Embedding}
 LLE begins by computing the neighbours for each data-point $x_i$ in $X = \{\vec{x}_1,...,\vec{x}_N\}$ either by placing a threshold on euclidean distance $\epsilon$, such that $x_j$ is a neighbour of $x_i$ if the euclidean distance in the high dimensional space $d_x(x_i,x_j) < \epsilon$. Alternatively, neighbours can be assigned based on $k$ nearest neighbours. We now need to compute the weights for each of the neighbours such that we can reconstruct the data-point as a linear combination of its neighbours. The following method is descried here.\cite{LLERoweis} First, we take the matrix $Z$, consisting of every neighbour of $x_i$ and subtract $x_i$ form every neighbour, we then compute the local co-variance of each element: $C = Z^TZ$. By solving $Cw = 1$ we find the weightings for each neighbour. We create an N by N matrix $W$ to store these weights, with $W_{ij}$ being 0 if $x_j$ is not a neighbour of $x_i$ and $\frac{w}{sum(w)}$ if they are neighbours.\\
 We can now use this weight matrix to reconstruct $X$ in a lower dimensional space $d<<D$ with embedding $Y$. We do this by minimising the error function $\min_Y\sum\limits_{i}|Y_i-\sum\limits_{j}W_{ij}Y_j|^2$.\cite{ghodsi2006dimensionality} We can solve this error function by finding the eigenpairs for the matrix $M = (I-W)^T(I-W)$ and setting the rows of $Y$ to the ascending eigenvalues.
@@ -206,8 +194,7 @@ Now that we have a pairwise geodesic distance matrix for $X$ we can apply the cl
 All algorithms and formulas taken from \textit{'A Global Geometric Framework for Nonlinear Dimensionality Reduction'}\cite{tenenbaum2000global} except where cited.
 
 \subsection{4. Description of a paper}
-I chose \textit {'Wireless sensor networks localization with isomap'} by Wang et al,\cite{wang2009wireless} found by searching the list of articles citing the Isomap paper on Google Scholar, because of the novel use of Isomap, not so much for its properties as dimensionality reduction but because it uses geodesic distances for pairwise dissimilarity. The application is to estimate the locations of wireless sensors in a network based on the received signal strength between sensors, using MDS. As the data is error prone over long distances  Isomap is used as an extension. Additionally, they developed a centralised system, where isomap is better suited due to its global algorithm, LLE is used in decentralised applications.\cite{patwari2004manifold} The primary problem they encountered was setting the number of neighbours to choose for step 1 of Isomap, they overcame this by using an adaptive parameter selection method.
-GRAPH REPRESENTATION?!
+\textit {'Wireless sensor networks localization with isomap'} by Wang et al,\cite{wang2009wireless} was chosen by searching the articles citing the Isomap paper on Google Scholar, because of the novel use of Isomap in finding location estimates for wireless sensors using pairwise dissimilarity. The data can be represented on a graph as a neighbourhood graph with edge weights being radio signal strength data, also used as the euclidian distance for ISOMAP. As the data is error prone over long distances, Isomap is used as an extension of MDS, a strength of this implementation. Additionally, they developed a centralised system, where isomap is better suited due to its global algorithm, LLE is used in decentralised applications.\cite{patwari2004manifold} The primary problem they encountered was setting the number of neighbours to choose for step 1 of Isomap, they overcame this by using an adaptive parameter selection method.
 \bibliography{report}{}
 \bibliographystyle{IEEEtranN}
 \end{document}
