@@ -1,7 +1,5 @@
-% function []= openAssessment( bncsvName, datacsvName, initialValues)
-bncsvName = '../../data/bnprinter.csv';
-datacsvName = '../../data/bnprinterdata.csv';
-initialValues = 'initialValues.csv';
+function []= openAssessment( bncsvName, datacsvName, initialValues)
+
 bncsv = csvread(bncsvName); % Read in the CSV files
 datacsv = csvread(datacsvName);
 initialValuescsv = csvread(initialValues);
@@ -56,7 +54,7 @@ while 1 % Loop until we reach convergence
                 columnIndex = constructCPTColumnIndex(variable, bncsv, configurations(configuration,:)); % Construct the CPT column index for this configuration so we read from the correct place
                 variableValue = configurations(configuration,variable); % Get the value of the current variable so we know if we need to minus the stored probability from 1 or not
                 probability = getProbability(CPT, variable, variableValue, columnIndex); % Get the probability from the CPT
-%                 probability = round(probability,10); % Round the probability to avoid floating point errors at a high number of iterations
+                probability = round(probability,10); % Round the probability to avoid floating point errors at a high number of iterations
                 numerators(:,configuration) = numerators(:,configuration) * probability; % Calculate the current value for the Bayes calculation numerator
             end
         end
@@ -125,4 +123,4 @@ while 1 % Loop until we reach convergence
         break;
     end
 end
-% end
+end
